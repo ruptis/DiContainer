@@ -13,6 +13,7 @@ var a = container.Resolve<A>();
 var generic = container.Resolve<Generic<A>>();
 
 Console.WriteLine(a);
+Console.WriteLine(generic);
 
 public class Generic<T> { }
 

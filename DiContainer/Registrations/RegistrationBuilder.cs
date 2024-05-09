@@ -6,14 +6,14 @@ public class RegistrationBuilder(Type implementationType, Lifetime lifetime)
 {
     protected internal readonly Type ImplementationType = implementationType;
     protected internal readonly Lifetime Lifetime = lifetime;
-    protected internal Type? InterfaceType;
+    protected internal readonly List<Type> InterfaceTypes = new();
     protected internal IInstantiatorFactory? InstantiatorFactory;
 
     public virtual Registration Build()
     {
         IInstantiator instantiator = InstantiatorFactory?.CreateInstantiator(this)
             ?? throw new InvalidOperationException("Instantiator factory is not set.");
-        return new Registration(ImplementationType, InterfaceType ?? ImplementationType, Lifetime, instantiator);
+        return new Registration(ImplementationType, InterfaceTypes, Lifetime, instantiator);
     }
 
     public RegistrationBuilder As<TInterface>() => As(typeof(TInterface));
@@ -27,13 +27,10 @@ public class RegistrationBuilder(Type implementationType, Lifetime lifetime)
 
     protected virtual void AddInterfaceType(Type interfaceType)
     {
-        if (InterfaceType is not null)
-            throw new InvalidOperationException("Interface type is already set.");
-
         if (!interfaceType.IsAssignableFrom(ImplementationType))
             throw new InvalidOperationException($"Type {ImplementationType} does not implement interface {interfaceType}.");
-
-        InterfaceType = interfaceType;
+        
+        InterfaceTypes.Add(interfaceType);
     }
 
     public RegistrationBuilder WithFactory(IInstantiatorFactory instantiatorFactory)
